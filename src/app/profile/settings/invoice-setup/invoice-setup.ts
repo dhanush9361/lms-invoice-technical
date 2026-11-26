@@ -1,5 +1,13 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 
 type ModalMode = 'invoice' | 'creditNote' | 'thankYou' | 'tax';
 type TabId = 'setup' | 'appearance';
@@ -30,7 +38,6 @@ interface InvoiceForm {
 export class InvoiceSetup implements OnInit, OnDestroy {
   mounted = false;
   activeTab: TabId = 'setup';
-  textsOpen = true;
   previewMenuOpen = false;
 
   modalOpen = false;
@@ -90,11 +97,23 @@ export class InvoiceSetup implements OnInit, OnDestroy {
   form: InvoiceForm = this.emptyForm();
   private saved: InvoiceForm = this.clone(this.form);
 
-  constructor(private location: Location) {}
+  // Opens the preview popup above the whole page, so the full background gets blurred
+  @ViewChild('previewModal')
+  set previewModal(ref: ElementRef<HTMLElement> | undefined) {
+    const el = ref?.nativeElement;
+    if (el && !el.matches(':popover-open')) {
+      el.showPopover();
+    }
+  }
+
+  constructor(
+    private location: Location,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     // TODO: load saved invoice settings from API and assign to this.form / this.saved
-    this.timers.push(setTimeout(() => (this.mounted = true), 30));
+    this.later(() => (this.mounted = true), 30);
   }
 
   ngOnDestroy(): void {
@@ -124,8 +143,14 @@ export class InvoiceSetup implements OnInit, OnDestroy {
     return JSON.parse(JSON.stringify(v));
   }
 
+  // Runs after a delay, then tells Angular to update the screen
   private later(fn: () => void, ms: number): void {
-    this.timers.push(setTimeout(fn, ms));
+    this.timers.push(
+      setTimeout(() => {
+        fn();
+        this.cdr.markForCheck();
+      }, ms),
+    );
   }
 
   // ---------- actions ----------
@@ -212,6 +237,7 @@ export class InvoiceSetup implements OnInit, OnDestroy {
     reader.onload = () => {
       this.form.logoUrl = reader.result as string;
       this.form.logoName = file.name;
+      this.cdr.markForCheck();
     };
     reader.readAsDataURL(file);
     input.value = '';
