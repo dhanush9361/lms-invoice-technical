@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, inject, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  HostListener,
+  computed,
+  inject,
+  OnDestroy,
+  signal,
+  viewChild
+} from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { EMPTY, interval, timer } from 'rxjs';
@@ -9,6 +19,8 @@ import { ADMIN_MENU, AdminMenuItem, isMenuVisible } from '../../config/admin-men
 import { PackageService } from '../../services/package.service';
 import { RolePageState } from '../../services/role.service';
 import { Location } from '@angular/common';   
+import { TawkChatService } from
+  '../../services/tawk-chat.service';
 
 
 /** One item of the header breadcrumb. `link: null` = not clickable (current page or plain parent). */
@@ -33,11 +45,12 @@ interface Breadcrumb {
   styleUrl: './admin-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminDashboard {
+export class AdminDashboard implements OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly packagesApi = inject(PackageService);
   private readonly rolePageState = inject(RolePageState);
+  private readonly tawkChat = inject(TawkChatService);
 
 
   private readonly location = inject(Location);
@@ -64,10 +77,15 @@ goBack(): void { this.location.back(); }
     return item.activeRoutes.some((route) => path === `/admin-dashboard/${route}`);
   }
 
-  constructor() {
-    // Package / role can change while the page is open (expiry, role edited by the admin):
-    // re-read the permissions every 5 minutes so menus update without logging in again.
-    timer(5 * 60_000, 5 * 60_000)
+ constructor() {
+
+  // Tawk.to chat - Company Admin only
+  if (this.isCompanyAdmin()) {
+    this.tawkChat.showForAdmin();
+  }
+
+  // Package / role can change while the page is open
+  timer(5 * 60_000, 5 * 60_000)
       .pipe(
         switchMap(() => this.auth.refreshPermissions().pipe(catchError(() => EMPTY))),
         takeUntilDestroyed(),
@@ -399,9 +417,13 @@ if (/^\/admin-dashboard\/my-certificate\/?$/.test(path)) {
   }
 
   onGlobalSearch(term: string): void {
-    // TODO: wire to a global search endpoint once one exists. Intentionally
-    // NOT coupled to CourseManagement's/RoleManagement's own local search
-    // state - those are page-level concerns owned by their own components.
+    // TODO: wire to a global search endpoint
     void term;
   }
+
+  // Hide Tawk chat when Admin Dashboard is destroyed
+  ngOnDestroy(): void {
+    this.tawkChat.hideForNonAdmin();
+  }
+
 }
