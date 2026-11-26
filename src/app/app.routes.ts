@@ -161,6 +161,19 @@ export const routes: Routes = [
           ),
         title: 'Dashboard',
       },
+      // Technical Support - learners only (ticket submission & status tracking)
+      {
+        path: 'technical-support',
+        canActivate: [learnerHomeGuard],
+        loadComponent: () =>
+          import('./dashboard/technical-support-learner/technical-support-learner').then(
+            (m) => m.TechnicalSupportComponent,
+          ),
+        title: 'Technical Support',
+      },
+
+
+
       // Role Management - company ADMIN only
       {
         path: 'role',

@@ -1,0 +1,346 @@
+<div class="w-full bg-[#f5f5f5] font-['DM_Sans',sans-serif] text-[#4a4a4a] px-4 sm:px-8 lg:px-12 py-6">
+
+  <!-- Breadcrumb -->
+  <nav class="text-[15px] text-[#555] transition-all duration-700 ease-out"
+       [ngClass]="mounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'">
+    Settings <span class="mx-1">&gt;</span> E - Commerce <span class="mx-1">&gt;</span> Invoice Setup
+  </nav>
+
+  <!-- Header -->
+  <div class="mt-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between transition-all duration-700 ease-out"
+       [ngClass]="mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'"
+       [style.transition-delay.ms]="60">
+    <div class="flex items-start gap-6">
+      <button type="button" (click)="goBack()"
+              class="mt-1 flex items-center gap-1 text-[15px] text-[#555] transition-all duration-200 hover:-translate-x-0.5 hover:text-black">
+        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        Back
+      </button>
+      <div>
+        <h1 class="text-[28px] font-medium leading-tight text-[#4a4a4a]">Invoice Setup</h1>
+        <p class="mt-1 text-[17px] text-[#555]">Configure invoice settings to manage billing and payments</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button type="button" (click)="save()"
+              class="h-11 min-w-[96px] rounded-full bg-white px-6 text-[15px] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#62B9CE] hover:text-white hover:shadow-md active:scale-95">
+        Save
+      </button>
+      <button type="button" (click)="cancel()"
+              class="h-11 min-w-[108px] rounded-full bg-white px-6 text-[15px] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95">
+        Cancel
+      </button>
+
+      <!-- Preview dropdown -->
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button type="button" (click)="togglePreviewMenu()"
+                class="flex h-11 min-w-[108px] items-center justify-center gap-2 rounded-full bg-white px-6 text-[15px] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95">
+          Preview
+          <svg class="h-3.5 w-3.5 transition-transform duration-300" [ngClass]="previewMenuOpen ? 'rotate-180' : ''"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="absolute right-0 top-[calc(100%+8px)] z-30 w-52 origin-top-right overflow-hidden rounded-2xl bg-white p-1.5 shadow-xl ring-1 ring-black/5 transition-all duration-200 ease-out"
+             [ngClass]="previewMenuOpen ? 'visible scale-100 opacity-100' : 'invisible scale-95 opacity-0'">
+          <button type="button" (click)="openModal('invoice')"
+                  class="w-full rounded-xl px-4 py-2.5 text-left text-[14px] transition-colors hover:bg-[#f5f5f5]">Preview Invoice</button>
+          <button type="button" (click)="openModal('creditNote')"
+                  class="w-full rounded-xl px-4 py-2.5 text-left text-[14px] transition-colors hover:bg-[#f5f5f5]">Preview Credit Note</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main card -->
+  <div class="mt-8 rounded-[28px] bg-white p-5 sm:p-8 transition-all duration-700 ease-out"
+       [ngClass]="mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+       [style.transition-delay.ms]="120">
+
+    <!-- Tabs -->
+    <div class="flex items-center gap-5">
+      <button type="button" (click)="setTab('setup')"
+              class="relative pb-2 text-[22px] transition-colors duration-300"
+              [ngClass]="activeTab === 'setup' ? 'font-medium text-[#4a4a4a]' : 'text-[#b3b3b3] hover:text-[#888]'">
+        Set Up
+        <span class="absolute bottom-0 left-0 h-[2px] rounded-full bg-[#62B9CE] transition-all duration-300"
+              [ngClass]="activeTab === 'setup' ? 'w-full opacity-100' : 'w-0 opacity-0'"></span>
+      </button>
+      <button type="button" (click)="setTab('appearance')"
+              class="relative pb-2 text-[22px] transition-colors duration-300"
+              [ngClass]="activeTab === 'appearance' ? 'font-medium text-[#4a4a4a]' : 'text-[#b3b3b3] hover:text-[#888]'">
+        Appearance
+        <span class="absolute bottom-0 left-0 h-[2px] rounded-full bg-[#62B9CE] transition-all duration-300"
+              [ngClass]="activeTab === 'appearance' ? 'w-full opacity-100' : 'w-0 opacity-0'"></span>
+      </button>
+    </div>
+
+    <!-- ================= TAB 1 : SET UP ================= -->
+    <div class="grid transition-[grid-template-rows,opacity,visibility] duration-500 ease-in-out"
+         [ngClass]="activeTab === 'setup' ? 'visible grid-rows-[1fr] opacity-100' : 'invisible grid-rows-[0fr] opacity-0'"
+         [attr.aria-hidden]="activeTab !== 'setup'">
+      <div class="overflow-hidden">
+        <div class="mt-8 space-y-6">
+
+          <!-- Built-in invoicing -->
+          <section class="rounded-[24px] bg-[#f5f5f5] p-6 transition-all duration-700 ease-out"
+                   [ngClass]="mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+                   [style.transition-delay.ms]="200">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div class="sm:w-1/2">
+                <h3 class="text-[17px] font-medium">Built-in Invoicing</h3>
+                <p class="mt-3 text-[16px] text-[#555]">Automatically create and attach invoices to processed transactions</p>
+              </div>
+              <div class="sm:w-1/2 sm:pl-4">
+                <h3 class="text-[17px] font-medium">Active/Deactive</h3>
+                <button type="button" (click)="toggleBuiltIn()" role="checkbox" [attr.aria-checked]="form.builtIn"
+                        class="mt-3 flex items-center gap-3 text-[16px] text-[#555]">
+                  <span class="flex h-5 w-5 items-center justify-center rounded-md transition-all duration-300"
+                        [ngClass]="form.builtIn ? 'bg-[#62B9CE] scale-110' : 'bg-[#dcdcdc]'">
+                    <svg class="h-3.5 w-3.5 text-white transition-all duration-300"
+                         [ngClass]="form.builtIn ? 'scale-100 opacity-100' : 'scale-0 opacity-0'"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                  </span>
+                  {{ form.builtIn ? 'Active' : 'Deactive' }}
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Prefix / numbering / VAT -->
+          <section class="rounded-[24px] bg-[#f5f5f5] p-6 sm:p-8 transition-all duration-700 ease-out"
+                   [ngClass]="mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+                   [style.transition-delay.ms]="280">
+
+            <h3 class="text-[17px] font-medium">Invoice prefix and numbering</h3>
+            <p class="mt-3 text-[16px] text-[#555]">Set your preferred invoice numbering and check the upcoming invoice number</p>
+            <div class="mt-6 grid max-w-[780px] grid-cols-1 gap-4 sm:grid-cols-2">
+              <input type="text" maxlength="20" placeholder="Invoice prefix"
+                     [value]="form.invoicePrefix" (input)="onText('invoicePrefix', $event)"
+                     class="h-[52px] w-full rounded-2xl bg-white px-6 text-[16px] outline-none placeholder:text-[#bdbdbd] transition-shadow duration-200 focus:ring-2 focus:ring-[#62B9CE]/50" />
+              <input type="text" inputmode="numeric" maxlength="10" placeholder="Next Invoice number"
+                     [value]="form.nextInvoiceNumber" (input)="onDigits('nextInvoiceNumber', $event)"
+                     class="h-[52px] w-full rounded-2xl bg-white px-6 text-[16px] outline-none placeholder:text-[#bdbdbd] transition-shadow duration-200 focus:ring-2 focus:ring-[#62B9CE]/50" />
+            </div>
+
+            <h3 class="mt-10 text-[17px] font-medium">Credit note prefix and numbering</h3>
+            <p class="mt-3 text-[16px] text-[#555]">Set your preferred credit note prefix and view the next credit note number</p>
+            <div class="mt-6 grid max-w-[780px] grid-cols-1 gap-4 sm:grid-cols-2">
+              <input type="text" maxlength="20" placeholder="Credit note prefix"
+                     [value]="form.creditNotePrefix" (input)="onText('creditNotePrefix', $event)"
+                     class="h-[52px] w-full rounded-2xl bg-white px-6 text-[16px] outline-none placeholder:text-[#bdbdbd] transition-shadow duration-200 focus:ring-2 focus:ring-[#62B9CE]/50" />
+              <input type="text" inputmode="numeric" maxlength="10" placeholder="Next Credit note number"
+                     [value]="form.nextCreditNoteNumber" (input)="onDigits('nextCreditNoteNumber', $event)"
+                     class="h-[52px] w-full rounded-2xl bg-white px-6 text-[16px] outline-none placeholder:text-[#bdbdbd] transition-shadow duration-200 focus:ring-2 focus:ring-[#62B9CE]/50" />
+            </div>
+
+            <h3 class="mt-10 text-[17px] font-medium">Company VAT number</h3>
+            <p class="mt-3 text-[16px] text-[#555]">Set your VAT number to display it on all generated invoices</p>
+            <div class="mt-6 grid max-w-[780px] grid-cols-1 gap-4 sm:grid-cols-2">
+              <input type="text" maxlength="20" placeholder="VAT Number"
+                     [value]="form.vatNumber" (input)="onText('vatNumber', $event)"
+                     class="h-[52px] w-full rounded-2xl bg-white px-6 text-[16px] outline-none placeholder:text-[#bdbdbd] transition-shadow duration-200 focus:ring-2 focus:ring-[#62B9CE]/50" />
+            </div>
+          </section>
+
+          <!-- 100% discount -->
+          <section class="rounded-[24px] bg-[#f5f5f5] p-6 transition-all duration-700 ease-out"
+                   [ngClass]="mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+                   [style.transition-delay.ms]="360">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div class="sm:w-1/2">
+                <h3 class="text-[17px] font-medium">Invoice for 100% discounts</h3>
+                <p class="mt-3 text-[16px] text-[#555]">Decide whether to generate invoices for purchases with a 100% discount</p>
+              </div>
+              <div class="sm:w-1/2 sm:pl-4">
+                <h3 class="text-[17px] font-medium">On/Off</h3>
+                <button type="button" (click)="toggleDiscount()" role="switch" [attr.aria-checked]="form.discountInvoice"
+                        class="relative mt-3 block h-[18px] w-[50px] rounded-full transition-colors duration-300"
+                        [ngClass]="form.discountInvoice ? 'bg-[#62B9CE]/40' : 'bg-white'">
+                  <span class="absolute left-0 top-1/2 h-[22px] w-[22px] -translate-y-1/2 rounded-full transition-all duration-300 ease-out"
+                        [ngClass]="form.discountInvoice ? 'translate-x-[28px] bg-[#62B9CE]' : 'translate-x-0 bg-[#c9e8ef]'"></span>
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= TAB 2 : APPEARANCE ================= -->
+    <div class="grid transition-[grid-template-rows,opacity,visibility] duration-500 ease-in-out"
+         [ngClass]="activeTab === 'appearance' ? 'visible grid-rows-[1fr] opacity-100' : 'invisible grid-rows-[0fr] opacity-0'"
+         [attr.aria-hidden]="activeTab !== 'appearance'">
+      <div class="overflow-hidden">
+        <div class="mt-8 space-y-6">
+
+          <!-- Logo / thank you / tax message -->
+          <section class="rounded-[24px] bg-[#f5f5f5] p-6 sm:p-8">
+            <h3 class="text-[17px] font-medium">Invoice/Credit note logo</h3>
+            <p class="mt-3 text-[16px] text-[#555]">Choose an image to feature in the upper-left corner of your invoices</p>
+
+            <div class="mt-5 space-y-3.5">
+              <button type="button" (click)="setLogoOption('none')" role="radio" [attr.aria-checked]="form.logoOption === 'none'"
+                      class="flex items-center gap-3 text-[16px] text-[#555]">
+                <span class="flex h-3.5 w-3.5 items-center justify-center rounded-full transition-all duration-300"
+                      [ngClass]="form.logoOption === 'none' ? 'bg-[#62B9CE] ring-4 ring-[#62B9CE]/25' : 'bg-[#dcdcdc]'"></span>
+                Do not show a logo
+              </button>
+              <br />
+              <button type="button" (click)="setLogoOption('show')" role="radio" [attr.aria-checked]="form.logoOption === 'show'"
+                      class="flex items-center gap-3 text-[16px] text-[#555]">
+                <span class="flex h-3.5 w-3.5 items-center justify-center rounded-full transition-all duration-300"
+                      [ngClass]="form.logoOption === 'show' ? 'bg-[#62B9CE] ring-4 ring-[#62B9CE]/25' : 'bg-[#dcdcdc]'"></span>
+                Show a logo on Invoice
+              </button>
+
+              <!-- Upload logo (depends on 'Show a logo' being selected) -->
+              <div class="flex flex-wrap items-center gap-3">
+                <button type="button" (click)="logoInput.click()" [disabled]="form.logoOption !== 'show'"
+                        class="flex items-center gap-3 text-[16px] text-[#555] transition-all duration-300"
+                        [ngClass]="form.logoOption === 'show' ? 'opacity-100 hover:text-black' : 'cursor-not-allowed opacity-40'">
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>
+                  Upload my logo
+                </button>
+                <input #logoInput type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="hidden" (change)="onLogoSelected($event)" />
+
+                <div *ngIf="form.logoUrl && form.logoOption === 'show'"
+                     class="flex items-center gap-2 rounded-full bg-white py-1 pl-1 pr-3 shadow-sm">
+                  <img [src]="form.logoUrl" alt="Logo" class="h-7 w-7 rounded-full object-cover" />
+                  <span class="max-w-[160px] truncate text-[13px] text-[#555]">{{ form.logoName }}</span>
+                  <button type="button" (click)="removeLogo()" class="text-[#999] transition-colors hover:text-black" aria-label="Remove logo">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                  </button>
+                </div>
+              </div>
+              <p class="text-[13px] text-red-500 transition-all duration-300" [ngClass]="logoError ? 'opacity-100' : 'h-0 opacity-0'">{{ logoError }}</p>
+            </div>
+
+            <!-- Thank you message -->
+            <h3 class="mt-9 text-[17px] font-medium">Thank you message in invoices</h3>
+            <p class="mt-3 text-[16px] text-[#555]">Include a personalised thank you message at the bottom of your invoices</p>
+            <textarea rows="1" maxlength="500" placeholder="Enter a text message"
+                      [value]="form.thankYou" (input)="onText('thankYou', $event)"
+                      class="mt-5 block h-[52px] w-full max-w-[360px] resize-none rounded-2xl bg-white px-5 py-3.5 text-[15px] outline-none placeholder:text-[#bdbdbd] transition-all duration-300 focus:h-28 focus:ring-2 focus:ring-[#62B9CE]/50"></textarea>
+            <button type="button" (click)="openModal('thankYou')"
+                    class="group mt-4 flex items-center gap-1.5 text-[15px] font-medium text-[#444]">
+              <svg class="h-3 w-3 transition-transform duration-300 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+              Sample preview for thank you message in invoice
+            </button>
+
+            <!-- Tax message -->
+            <h3 class="mt-9 text-[17px] font-medium">Tax message in invoices</h3>
+            <p class="mt-3 text-[16px] text-[#555]">Add a short message to explain your tax policy, such as VAT or sales tax, on your invoices</p>
+            <textarea rows="1" maxlength="500" placeholder="Enter a text message"
+                      [value]="form.taxMessage" (input)="onText('taxMessage', $event)"
+                      class="mt-5 block h-[52px] w-full max-w-[360px] resize-none rounded-2xl bg-white px-5 py-3.5 text-[15px] outline-none placeholder:text-[#bdbdbd] transition-all duration-300 focus:h-28 focus:ring-2 focus:ring-[#62B9CE]/50"></textarea>
+            <button type="button" (click)="openModal('tax')"
+                    class="group mt-4 flex items-center gap-1.5 text-[15px] font-medium text-[#444]">
+              <svg class="h-3 w-3 transition-transform duration-300 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+              Sample preview for tax message invoice
+            </button>
+          </section>
+
+          <!-- Invoice texts (collapsible) -->
+          <section class="rounded-[24px] bg-[#f5f5f5] p-6 sm:p-8">
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 class="text-[17px] font-medium">Invoice texts</h3>
+                <p class="mt-3 text-[16px] text-[#555]">Customise the details that appear on your invoices</p>
+              </div>
+              <button type="button" (click)="textsOpen = !textsOpen" [attr.aria-expanded]="textsOpen"
+                      class="mr-2 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200 hover:bg-white active:scale-90 sm:mr-24">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                  <path d="M5 12h14"/>
+                  <path class="origin-center transition-transform duration-300" [ngClass]="textsOpen ? 'scale-y-0' : 'scale-y-100'" d="M12 5v14"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="grid transition-[grid-template-rows,opacity] duration-500 ease-in-out"
+                 [ngClass]="textsOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'">
+              <div class="overflow-hidden">
+                <div class="space-y-10 pt-8">
+                  <div *ngFor="let group of textGroups">
+                    <ng-container *ngIf="group.description">
+                      <h3 class="text-[17px] font-medium">{{ group.title }}</h3>
+                      <p class="mt-3 text-[16px] text-[#555]">{{ group.description }}</p>
+                    </ng-container>
+
+                    <div class="mt-5 grid max-w-[820px] grid-cols-1 gap-3 sm:grid-cols-[1fr_1.85fr]">
+                      <div class="flex h-[52px] items-center rounded-2xl bg-white px-6 text-[15px] font-medium">Default Text</div>
+                      <div class="flex h-[52px] items-center rounded-2xl bg-white px-6 text-[15px] font-medium sm:pl-12">Edit Text</div>
+
+                      <!-- Default text list -->
+                      <div class="rounded-2xl bg-white px-6 py-3">
+                        <div *ngFor="let item of group.items" class="flex h-[42px] items-center text-[15px] font-medium">{{ item.label }}</div>
+                      </div>
+                      <!-- Editable fields -->
+                      <div class="rounded-2xl bg-white px-4 py-3 sm:px-6">
+                        <div *ngFor="let item of group.items" class="flex h-[42px] items-center">
+                          <input type="text" maxlength="100" [placeholder]="'Enter ' + item.label"
+                                 [value]="form.texts[item.key] || ''" (input)="onTextItem(item.key, $event)"
+                                 class="w-full border-b border-[#e3e3e3] bg-transparent py-2 text-[13px] outline-none placeholder:text-[#c4c4c4] transition-colors duration-200 focus:border-[#62B9CE]" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PREVIEW MODAL ================= -->
+  <div *ngIf="modalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-opacity duration-300"
+         [ngClass]="modalVisible ? 'opacity-100' : 'opacity-0'" (click)="closeModal()"></div>
+
+    <div role="dialog" aria-modal="true"
+         class="relative max-h-[90vh] w-full max-w-[560px] overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl transition-all duration-300 ease-out sm:p-7"
+         [ngClass]="modalVisible ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-6 scale-95 opacity-0'">
+
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#4a9bb0]">Sample preview</p>
+          <h2 class="mt-1 text-[22px] font-medium">{{ modalTitle }}</h2>
+        </div>
+        <button type="button" (click)="closeModal()" aria-label="Close"
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-[#f5f5f5] transition-all duration-200 hover:rotate-90 hover:bg-[#ececec] active:scale-90">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="mt-6 rounded-2xl border border-[#ececec] p-6 shadow-sm">
+        <img *ngIf="form.logoOption === 'show' && form.logoUrl" [src]="form.logoUrl" alt="Logo" class="mb-5 h-12 w-auto object-contain" />
+
+        <div class="flex items-start justify-between border-b border-[#ececec] pb-5">
+          <h3 class="text-[28px] font-medium">{{ modalMode === 'creditNote' ? 'Credit Note' : text('invoice') }}</h3>
+          <div class="text-right">
+            <p class="text-[12px] uppercase tracking-wider text-[#888]">{{ text('invoiceNumber') }}</p>
+            <p class="mt-1 text-[16px] font-medium">{{ previewNumber }}</p>
+          </div>
+        </div>
+
+        <div class="space-y-4 pt-5 text-[15px]">
+          <div class="flex justify-between"><span class="text-[#666]">{{ text('customerDetails') }}</span><span class="font-semibold">Sample Customer</span></div>
+          <div class="flex justify-between"><span class="text-[#666]">{{ text('description') }}</span><span class="font-semibold">Sample purchase</span></div>
+          <div class="flex justify-between"><span class="text-[#666]">{{ text('subtotal') }}</span><span class="font-semibold">100.00</span></div>
+          <div class="flex justify-between"><span class="text-[#666]">{{ text('tax') }}</span><span class="font-semibold">10.00</span></div>
+          <div class="flex justify-between border-t border-[#ececec] pt-4 text-[16px]"><span class="font-medium">{{ text('totalAmount') }}</span><span class="font-semibold">110.00</span></div>
+        </div>
+
+        <p *ngIf="showTaxMessage" class="mt-6 text-[13px] text-[#666]">{{ form.taxMessage }}</p>
+        <p *ngIf="showThankYou" class="mt-4 text-[14px] font-medium text-[#4a4a4a]">{{ form.thankYou }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-[#333] px-6 py-3 text-[14px] text-white shadow-xl transition-all duration-300"
+       [ngClass]="toast ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-4 opacity-0'">
+    {{ toast }}
+  </div>
+</div>

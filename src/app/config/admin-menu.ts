@@ -1,6 +1,6 @@
 import { AccessRequirement, AuthService, FEATURE, MENU } from '../services/auth';
 
-export type MenuIcon = 'dashboard' | 'role' | 'course' | 'report' | 'certificate' | 'subscription' | 'users';
+export type MenuIcon = 'dashboard' | 'role' | 'course' | 'report' | 'certificate' | 'subscription' | 'users' | 'support';
 
 
 export type MenuAccess =
@@ -90,6 +90,17 @@ export const ADMIN_MENU: readonly AdminMenuItem[] = [
     // Same rule the backend uses for reports (ReportService: isManager) = anyone who can manage courses.
     access: { type: 'feature', anyOf: COURSE_ACCESS },
   },
+  {
+    id: 'technical-support',
+    label: 'Support',
+    title: 'Technical Support',
+    route: 'technical-support',
+    icon: 'support',
+    // Learners only
+    access: { type: 'learnerHome' },
+  },
+
+
   {
     id: 'certificate',
     label: 'Certificate',

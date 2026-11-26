@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 
 import { TwoFaVerification } from '../two-fa-verification/two-fa-verification';
+import { InvoiceSetup } from '../invoice-setup/invoice-setup';
 
 interface SettingsTab {
   id: string;
@@ -11,11 +12,13 @@ interface SettingsTab {
 
 @Component({
   selector: 'app-settings-menu',
-  imports: [TwoFaVerification],
+  standalone: true,
+  imports: [TwoFaVerification, InvoiceSetup],
   templateUrl: './settings-menu.html',
   styleUrl: './settings-menu.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class SettingsMenu {
   readonly tabs: SettingsTab[] = [
     { id: 'general', label: 'General Settings', enabled: true },
